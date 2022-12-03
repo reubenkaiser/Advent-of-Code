@@ -43,19 +43,19 @@ class RpsRound:
 
         return score
 
-scores = [RpsRound(choices).rpsScore() for choices in strategy_guide]
-print(sum(scores))
-
 
 #%% Part 2
 # Knowing that X, Y, Z encode for Lose, draw, win; calculate total score of strat.
-class RpsRound:
-    def __init__(self, choices):
+def partTwoModifications():
+    '''Makes adjustments to RpsRound class necessary for part 2'''
+
+    def newInit(self, choices):
         self.elfChoice = self.choiceEncoder(choices[0])
         self.Outcome = choices[1]
         self.playerChoice = self.playerChoiceDecider() # Player choice now decided by other attributes
+    RpsRound.__init__ = newInit
 
-    def choiceEncoder(self, choice):
+    def newChoiceEncoder(self, choice):
         '''Returns the choice as 0, 1, or 2 for Rock, Paper, Scissors respectively'''
         intChoice = 0
 
@@ -63,6 +63,7 @@ class RpsRound:
             intChoice = ord(choice) - 65
         
         return intChoice
+    RpsRound.choiceEncoder = newChoiceEncoder
 
     def playerChoiceDecider(self):
         '''outputs required player choice to meet desired outcome given elf choice.'''
@@ -74,26 +75,16 @@ class RpsRound:
         }
 
         return choiceLogic[self.Outcome][self.elfChoice]
+    RpsRound.playerChoiceDecider = playerChoiceDecider
 
-    def rpsRef(self):
-        '''Decides if the player wins or not'''
-        
-        rpsLogic = {
-            0: [3, 0, 6],
-            1: [6, 3, 0],
-            2: [0, 6, 3]
-        }
+def getScore():
+    scores = [RpsRound(choices).rpsScore() for choices in strategy_guide]
+    return sum(scores)
 
-        return rpsLogic[self.playerChoice][self.elfChoice]
-
-    def rpsScore(self):
-        score = 0
-
-        score += self.playerChoice + 1 # scores on own choice
-        score += self.rpsRef() # score based on outcome
-
-        return score
-
-scores = [RpsRound(choices).rpsScore() for choices in strategy_guide]
-print(sum(scores))
-
+if __name__ == '__main__':
+    print(f'Part 1 total: {getScore()}')
+    
+    
+    partTwoModifications()
+    print(f'Part 2 total: {getScore()}')
+# %%
