@@ -13,7 +13,7 @@ class AoC:
             session = session_file.readline()
             session = session.strip()
     except FileNotFoundError:
-        raise Exception("Your repository is missing the session file.")
+        raise Exception("Your repository is missing your session file.")
 
     def __init__(self):
         self.day = self.__get_day()
