@@ -7,16 +7,10 @@ with open('inputs/input4.txt') as input_file:
     paired_elf_duties = []
     for line in input_file:
         line = line.strip()
-        pair = line.split(',')
-        pair = [id_range.split('-') for id_range in pair]
-        pair = [
-            set(
-                range(
-                    int(id_range[0])
-                    , int(id_range[1]) + 1
-                )
-            ) for id_range in pair
-        ]
+        pair = line.split(',') # create list of strings
+        pair = [map(int, id_range.split('-')) for id_range in pair] # create a pair of int lists
+        pair = [range(id_range[0], id_range[1] + 1) for id_range in pair] # create a pair of range objects
+        pair = [set(id_range) for id_range in pair] # create a pair of sets for given ranges
         paired_elf_duties.append(pair)
 
 #%%
