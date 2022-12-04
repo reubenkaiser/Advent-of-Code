@@ -1,5 +1,10 @@
+#%%
+from AoC import AoC
+
+session = AoC()
+
 #%% Load input
-with open('/home/reuben/Documents/Advent of Code/day2/input.txt') as input_file:
+with open('inputs/input2.txt') as input_file:
     strategy_guide = [] # initialise strategy guide as list of tuples
     for line in input_file:
         choices = tuple(line.strip().split(' ')) # remove newline character and splits line

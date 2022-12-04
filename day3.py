@@ -1,5 +1,10 @@
 #%%
-with open('input.txt') as input_file:
+from AoC import AoC
+
+session = AoC()
+
+#%%
+with open('inputs/input3.txt') as input_file:
     rucksacks = []
     for line in input_file:
         line = line.strip()
@@ -58,8 +63,3 @@ def part_two():
 if __name__ == '__main__':
     print(part_one())
     print(part_two())
-
-    
-
-
-# %%
