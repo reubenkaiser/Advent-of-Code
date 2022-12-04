@@ -5,12 +5,15 @@ import __main__
 
 
 class AoC:
+    """Handles the reading of daily input data from AoC and writing it to file in the `inputs` folder."""
+
+    # Check for and read session key from file
     try:
         with open('session') as session_file:
             session = session_file.readline()
             session = session.strip()
     except FileNotFoundError:
-        print("Couldn't initialise: missing session file.")
+        raise Exception("Your repository is missing the session file.")
 
     def __init__(self):
         self.day = self.__get_day()
@@ -36,7 +39,7 @@ class AoC:
                 response= r.get(url, headers={'Cookie':f'session={AoC.session}'})
                 input_file.write(response.text)
         except FileExistsError:
-            print(f"Input file for day{self.day} already exists, delete it if you'd like to refresh it.")
-
+            print(f"Input file for day{self.day} already exists, delete it if you'd like to refresh.")
+        
 if __name__ == '__main__':
     test = AoC()

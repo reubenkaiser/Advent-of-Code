@@ -18,7 +18,7 @@ def total_priority(item_list):
 
     for item in item_list:
         char_num = ord(item)
-        item_priority = 0
+        priority = 0
 
         if str.islower(item):
             priority = char_num - 96
@@ -34,10 +34,8 @@ def part_one():
     rucksack_overlap = []
     for rucksack in rucksacks:
         compartment_size = int(len(rucksack)/2)
-        compartment1 = set(rucksack[:compartment_size])
-        compartment2 = set(rucksack[compartment_size:])
-        overlap_item = compartment1.intersection(compartment2).pop()
-        rucksack_overlap.append(overlap_item)
+        overlap_item = set(rucksack[:compartment_size]) & set(rucksack[compartment_size:])
+        rucksack_overlap.append(overlap_item.pop())
           
     return total_priority(rucksack_overlap)
 
