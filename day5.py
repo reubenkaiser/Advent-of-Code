@@ -17,21 +17,20 @@ instructions = contents[split_idx + 1:]
 def build_stack(structure_raw):
     structure = structure_raw.copy()
 
-    # Processing structure into list of lists for each stack
+    # create character array from structure_raw, and rotate it clockwise to get horizontal stacks
     index_line = list(structure.pop())
-    block_indexes = []
+    char_array = np.array([list(line) for line in structure])
+    char_array = np.rot90(char_array, k=-1) # rotates all stacks clockwise
 
+    structure = []
+    # Keep only stacks of characters that had a stack number associated
     for idx, character in enumerate(index_line):
-        if character != ' ':
-            block_indexes.append(idx)
-
-    structure.reverse() # reverse to build stacks from bottom up
-    stack_list = []
-    for idx in block_indexes:
-        stack = [line[idx] for line in structure if line[idx] != ' ']
-        stack_list.append(stack)
+        if character != ' ': # index line has a number at this position
+            stack = list(char_array[idx])
+            stack = [box for box in stack if box != ' '] # remove empties from stack
+            structure.append(stack)
     
-    return stack_list
+    return structure
 
 def part_one():
     stack = build_stack(structure_raw)
@@ -81,3 +80,4 @@ def part_two():
 if __name__ == '__main__':
     print(part_one())
     print(part_two())
+# %%
