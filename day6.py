@@ -11,10 +11,7 @@ def process_stream(stream, offset):
     for start in range(0, len(stream) - offset):
         window = stream[start:start + offset]
         if len(set(window)) == offset:
-            break
-    
-    return stream.find(window) + offset
-
+            return start + offset
 
 if __name__ == '__main__':
     print(process_stream(stream, 4))
