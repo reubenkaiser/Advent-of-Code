@@ -11,12 +11,14 @@ with open('inputs/input7.txt') as input_file:
 
 class File:
     def __init__(self, name, parent, size):
-        self.name = parent
+        self.name = name
         self.parent = parent
         self.size = int(size)
 
     def __eq__(self, other):
-        return self.name == other.name & self.parent == other.parent 
+        if other == None:
+            return False
+        return (self.name == other.name) & (self.parent == other.parent) 
 
 
 class Directory(File):
@@ -27,11 +29,11 @@ class Directory(File):
     def add_child(self, new_child):
         """adds object described by line to children"""
         # exit if child already exists, else create child entry
-        new_child_exists = new_child.name in [child.name for child in self.children]
-        if new_child_exists:
+        if self.is_parent(new_child):
             return
         else:
             self.children.append(new_child)
+#            print(f'added {new_child.name} to {self.name}')
     
     def get_total_size(self):
         total = 0
@@ -42,18 +44,24 @@ class Directory(File):
                 total += child.get_total_size()
         return total
 
-    def get_children_with_name(self, name):
-        candidates = [child for child in self.children if child.name == name]
-        return candidates
+    def get_matching_child(self, new_child):
+        candidates = [child for child in self.children if new_child.__eq__(child)]
+        if candidates:
+            return candidates[0]
+        else:
+            return None
+
+    def is_parent(self, child):
+        return self.get_matching_child(child) is not None
 
 
 class FileSystem:
     def __init__(self):
         self.home_directory = Directory('/')
-        self.file_system = {'/':self.home_directory}
+        self.register = {'/':self.home_directory}
     
     def add_to_register(self, file):
-        exists = any(file.__eq__(val) for key, val in self.register)
+        exists = any(file.__eq__(val) for key, val in self.register.items())
         if not exists:
             self.register[file.name] = file
 
@@ -75,7 +83,6 @@ class Session:
         finished = False
         while not finished:
             try:
-                self.get_next_line()
                 if self.current_line.startswith('$'):
                     self.parse_command()
             except StopIteration:
@@ -85,18 +92,23 @@ class Session:
     def parse_command(self):
         parameter = self.current_line.split(' ')[-1]
         if ' cd ' in self.current_line:
-            self.get_next_line()
             self.change_directory(parameter)
+            self.get_next_line()
         elif parameter == 'ls':
-            output_finished = False
-            while not output_finished:
-                self.get_next_line()
-                if self.current_line.startswith('$'):
-                    output_finished = True
-                else:
-                    child = self.parse_child(self.current_line)
+            self.parse_contents()
+
+    def parse_contents(self):
+        """reads until next $ line creating child files in cwd"""
+        output_finished = False
+        while not output_finished:
+            self.get_next_line()
+            if self.current_line.startswith('$'):
+                output_finished = True
+            else:
+                child = self.parse_child(self.current_line)
+                if not self.cwd.is_parent(child):
                     self.cwd.add_child(child)
-                    self.file_system[child.name] = child
+                    self.file_system.add_to_register(child)
 
     def parse_child(self, line):
         line = line.split(' ')
@@ -112,20 +124,25 @@ class Session:
 
     def change_directory(self, parameter):
         if parameter == '/':
-            self.cwd = self.file_system['/']
+            self.cwd = self.file_system.home_directory
         elif parameter == '..':
             if self.cwd.parent != None:
                 self.cwd = self.cwd.parent
         else:
             child = self.parse_child('dir ' + parameter)
-            self.cwd.add_child(child)
+            if not self.cwd.is_parent(child):
+                self.cwd.add_child(child)
+                self.file_system.add_to_register(child)
+            else:
+                child = self.cwd.get_matching_child(child)
             self.cwd = child
+#        print(f'Changed dir to {self.cwd.name}')
 
 
     def part_one(self):
         self.run()
-        directories = [file.get_total_size() for name, file in self.file_system.items() if isinstance(file, Directory)]
-        return directories
+        directories = [file.get_total_size() for name, file in self.file_system.register.items() if isinstance(file, Directory)]
+        
         total = 0
         for dir in directories:
             size = dir.get_total_size()
@@ -137,5 +154,5 @@ class Session:
                 
 if __name__ == '__main__':
     console = Session(raw_logs)
-    print(console.part_one())
+    console.part_one()
 # %%
